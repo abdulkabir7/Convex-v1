@@ -16,16 +16,21 @@ const arcMainnet = defineChain({
 
 const publicClient = createPublicClient({
   chain: arcMainnet,
-  transport: http(),
+  transport: http(RPC_URL),
 });
 
 export async function getMarketCount(): Promise<number> {
-  const count = await publicClient.readContract({
-    address: CONVEX_MANAGER_ADDRESS,
-    abi: convexManagerAbi,
-    functionName: "nextMarketId",
-  });
-  return Number(count);
+  try {
+    const count = await publicClient.readContract({
+      address: CONVEX_MANAGER_ADDRESS,
+      abi: convexManagerAbi,
+      functionName: "nextMarketId",
+    });
+    return Number(count);
+  } catch (error) {
+    console.error("[getMarketCount] Arc RPC unavailable:", error);
+    return 0;
+  }
 }
 
 export async function getMarket(marketId: number) {

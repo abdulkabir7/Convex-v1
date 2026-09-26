@@ -1,38 +1,26 @@
 import { type Address } from "viem";
 
-function getEnv(
-  name: string,
-  { required = true, defaultValue }: { required?: boolean; defaultValue?: string } = {}
-): string | undefined {
-  const value = process.env[name];
-  // Handle empty string, undefined, or whitespace-only values
-  if (!value || value.trim().length === 0) {
-    if (defaultValue !== undefined) {
-      return defaultValue;
-    }
-    if (required) {
-      throw new Error(`Missing environment variable: ${name}`);
-    }
-    return undefined;
-  }
-  return value.trim();
-}
+export const MANAGER_CONTRACT_ADDRESS = (
+  process.env.NEXT_PUBLIC_MANAGER_ADDRESS?.trim() ||
+  "0xd59A8fdf194F41fFb46888d63909F298DF600F30"
+) as Address;
 
-export const MANAGER_CONTRACT_ADDRESS = getEnv("NEXT_PUBLIC_MANAGER_ADDRESS", {
-  defaultValue: "0x0000000000000000000000000000000000000000",
-}) as Address;
-export const RPC_URL = getEnv("NEXT_PUBLIC_RPC_URL", {
-  defaultValue: "https://rpc.mainnet.arc.io",
-})!;
+export const RPC_URL =
+  process.env.NEXT_PUBLIC_RPC_URL?.trim() ||
+  "https://rpc.mainnet.arc.io";
+
 export const DEFAULT_CHAIN_ID = Number(
-  getEnv("NEXT_PUBLIC_CHAIN_ID", { required: false, defaultValue: "5042" })
+  process.env.NEXT_PUBLIC_CHAIN_ID?.trim() || "5042"
 );
 
-export const WALLET_CONNECT_PROJECT_ID = getEnv("NEXT_PUBLIC_WC_PROJECT_ID", { required: false });
+export const WALLET_CONNECT_PROJECT_ID =
+  process.env.NEXT_PUBLIC_WC_PROJECT_ID?.trim() ||
+  "bbd247378e89e58df9b556683f410774";
 
-export const RESOLVER_ADDRESS = getEnv("NEXT_PUBLIC_RESOLVER_ADDRESS", {
-  required: false,
-  defaultValue: "0xF39cE20c6A905157cF532890ed87b86f422774b7",
-}) as Address;
+export const RESOLVER_ADDRESS = (
+  process.env.NEXT_PUBLIC_RESOLVER_ADDRESS?.trim() ||
+  "0x42562D5Eadb7EFEd4997C580eA60f2D2f7D58018"
+) as Address;
+
 
 

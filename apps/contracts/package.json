@@ -11,7 +11,9 @@
     "deploy:arc": "set HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=true&& hardhat ignition deploy ignition/modules/ConvexManager.ts --network arcMainnet",
     "verify": "hardhat verify",
     "clean": "hardhat clean",
-    "typechain": "hardhat typechain"
+    "typechain": "hardhat typechain",
+    "grant:creator": "hardhat run scripts/grant-creator-role.ts --network arcMainnet",
+    "grant:resolver": "hardhat run scripts/grant-resolver-role.ts --network arcMainnet"
   },
   "keywords": [
     "hardhat",

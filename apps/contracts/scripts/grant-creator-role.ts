@@ -1,12 +1,16 @@
 import hre from "hardhat";
 
-const MANAGER_ADDRESS = process.env.MANAGER_CONTRACT_ADDRESS || "0x2A327dC3FE98338b9c0bb99Af2aC0503caCd9b70";
+const MANAGER_ADDRESS = process.env.MANAGER_CONTRACT_ADDRESS || "0xd59A8fdf194F41fFb46888d63909F298DF600F30";
 const CREATOR_ROLE = hre.ethers.keccak256(hre.ethers.toUtf8Bytes("CREATOR_ROLE"));
 
 async function main() {
   const walletAddress = process.env.WALLET_ADDRESS;
   if (!walletAddress) {
-    console.error("Usage: WALLET_ADDRESS=0x... hardhat run scripts/grant-creator-role.ts --network sepolia");
+    console.error(
+      "Usage:\n" +
+      "  PowerShell: $env:WALLET_ADDRESS=\"0x...\"; npx hardhat run scripts/grant-creator-role.ts --network arcMainnet\n" +
+      "  Bash/macOS: WALLET_ADDRESS=0x... npx hardhat run scripts/grant-creator-role.ts --network arcMainnet"
+    );
     process.exit(1);
   }
 

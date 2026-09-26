@@ -7,7 +7,8 @@ import { CalendarClock, Rocket, Sparkles, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCreateMarket } from "@/lib/hooks/use-create-market";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
+import { CONVEX_MANAGER_ADDRESS, convexManagerAbi, CREATOR_ROLE } from "@/lib/contracts/convex-manager";
 
 type Category = "Sports" | "Crypto" | "Culture";
 type ResolutionMode = "manual" | "oracle";
@@ -77,8 +78,18 @@ export function CreateMarketCard() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const router = useRouter();
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const { createMarket: createMarketOnChain, isPending, isSuccess: txSuccess, error: txError, marketId, storeMetadata } = useCreateMarket();
+
+  const { data: hasCreatorRole } = useReadContract({
+    address: CONVEX_MANAGER_ADDRESS,
+    abi: convexManagerAbi,
+    functionName: "hasRole",
+    args: address ? [CREATOR_ROLE, address] : undefined,
+    query: {
+      enabled: Boolean(isConnected && address),
+    },
+  });
 
   useEffect(() => {
     if (txError) {
@@ -199,6 +210,11 @@ export function CreateMarketCard() {
 
     if (!isConnected) {
       setSubmitError("Please connect your wallet to create a market.");
+      return;
+    }
+
+    if (hasCreatorRole === false) {
+      setSubmitError("Connected wallet does not have CREATOR_ROLE on Arc Mainnet. Switch to the deployer account (0x4256...8018) or grant the role to this address.");
       return;
     }
 
@@ -405,12 +421,27 @@ export function CreateMarketCard() {
               )}
             </fieldset>
 
+            {isConnected && hasCreatorRole === false && (
+              <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-xs text-amber-900">
+                <p className="font-semibold text-amber-800">Creator Role Required</p>
+                <p className="mt-1">
+                  Connected wallet <code className="font-mono text-amber-950 font-semibold">{address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""}</code> does not currently have <code className="font-mono text-amber-950">CREATOR_ROLE</code> on Arc Mainnet.
+                </p>
+                <p className="mt-1">
+                  To create markets, switch in MetaMask to the deployer account (<code className="font-mono text-amber-950 font-semibold">0x4256...8018</code>) or grant the role to this address:
+                </p>
+                <code className="mt-2 block rounded-lg bg-amber-100/80 p-2 font-mono text-[11px] text-amber-950 select-all overflow-x-auto whitespace-pre">
+                  {`PowerShell: $env:WALLET_ADDRESS="${address}"; npx hardhat run scripts/grant-creator-role.ts --network arcMainnet\nBash: WALLET_ADDRESS=${address} npx hardhat run scripts/grant-creator-role.ts --network arcMainnet`}
+                </code>
+              </div>
+            )}
+
             <Button
               type="submit"
-              disabled={!isFormValid || isSubmitting}
+              disabled={!isFormValid || isSubmitting || hasCreatorRole === false}
               className="w-full rounded-2xl bg-[#35D07F] text-base font-semibold text-white hover:bg-[#29b46e] disabled:cursor-not-allowed disabled:bg-opacity-60"
             >
-              {isSubmitting ? "Preparing market..." : "Preview & launch"}
+              {isSubmitting ? "Preparing market..." : hasCreatorRole === false ? "Creator Role Required" : "Preview & launch"}
             </Button>
           </div>
 

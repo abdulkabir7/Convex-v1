@@ -1,12 +1,16 @@
 import hre from "hardhat";
 
-const MANAGER_ADDRESS = process.env.MANAGER_CONTRACT_ADDRESS || "0xD1DbF3F78bC53d918CBca130Ddc7784574181075";
+const MANAGER_ADDRESS = process.env.MANAGER_CONTRACT_ADDRESS || "0xd59A8fdf194F41fFb46888d63909F298DF600F30";
 const RESOLVER_ROLE = hre.ethers.keccak256(hre.ethers.toUtf8Bytes("RESOLVER_ROLE"));
 
 async function main() {
   const walletAddress = process.env.RESOLVER_ADDRESS;
   if (!walletAddress) {
-    console.error("Usage: RESOLVER_ADDRESS=0x... hardhat run scripts/grant-resolver-role.ts --network sepolia");
+    console.error(
+      "Usage:\n" +
+      "  PowerShell: $env:RESOLVER_ADDRESS=\"0x...\"; npx hardhat run scripts/grant-resolver-role.ts --network arcMainnet\n" +
+      "  Bash/macOS: RESOLVER_ADDRESS=0x... npx hardhat run scripts/grant-resolver-role.ts --network arcMainnet"
+    );
     process.exit(1);
   }
 

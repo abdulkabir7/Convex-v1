@@ -1,14 +1,10 @@
-import { Address, Hex, PublicClient, WalletClient, createPublicClient, formatUnits, parseAbi, parseUnits, http } from "viem";
+import { Address, Hex, PublicClient, WalletClient, createPublicClient, formatUnits, parseUnits, http } from "viem";
 
 import { MANAGER_CONTRACT_ADDRESS, RPC_URL } from "@/lib/constants";
 import { arcMainnet } from "@/lib/chains";
+import { convexManagerAbi } from "./convex-manager";
 
-export const convexManagerAbi = parseAbi([
-  "function stake(uint32 marketId, uint8 outcome, uint128 amount) payable",
-  "function claim(uint32 marketId) external",
-  "function markets(uint32 marketId) external view returns (bytes32 questionId,string metadataURI,address creator,address resolver,uint64 closeTime,uint64 resolveTime,uint16 protocolFeeBps,uint16 creatorFeeBps,uint128 yesPool,uint128 noPool,uint128 payoutPool,uint128 totalWinningStake,uint8 status,uint8 winningOutcome,bool usesOracle)",
-  "function positionOf(uint32 marketId, address user) external view returns (uint128 yesStake, uint128 noStake)",
-]);
+export { convexManagerAbi };
 
 export interface MarketStruct {
   questionId: Hex;
