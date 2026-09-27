@@ -1,4 +1,5 @@
 import { Container } from "@/components/layout/container";
+import { HeroIllustration } from "@/components/home/hero-illustration";
 import { MarketGallery } from "@/components/markets/market-gallery";
 import { fetchMarkets } from "@/lib/api/markets";
 import { ArrowRight, CircleDollarSign, ShieldCheck, Zap } from "lucide-react";
@@ -13,13 +14,13 @@ export default async function Home() {
   return (
     <main className="arc-grid min-h-screen pb-24 pt-8 sm:pt-12">
       <Container className="space-y-10 lg:space-y-14">
-        <section className="glass-panel relative overflow-hidden rounded-3xl p-6 sm:p-10">
+        <section className="glass-panel relative grid overflow-hidden rounded-3xl p-6 sm:p-10 lg:min-h-[520px] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-4 lg:p-8 xl:p-10">
           <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-          <div className="relative max-w-3xl">
+          <div className="relative z-10 max-w-2xl py-3 lg:py-8">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
               <Zap className="h-3.5 w-3.5" /> Arc-native prediction markets
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl xl:text-7xl">
               Make the call.<br /><span className="text-primary">Back it on Arc.</span>
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
@@ -33,6 +34,9 @@ export default async function Home() {
                 <CircleDollarSign className="h-4 w-4 text-primary" /> 1 USDC minimum
               </div>
             </div>
+          </div>
+          <div className="relative -mx-2 -mb-3 mt-5 sm:mx-0 lg:my-0 lg:-mr-5">
+            <HeroIllustration />
           </div>
         </section>
 
