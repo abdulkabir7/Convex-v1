@@ -283,11 +283,11 @@ export function CreateMarketCard() {
                     }
                     className={cn(
                       "rounded-2xl border border-[#E5E7EB] bg-white px-4 py-3 text-left transition hover:border-[#35D07F] hover:bg-[#F3F4F6]",
-                      formState.category === option.value && "border-[#35D07F] bg-[#E9F7EF] !text-[#2A2C34]"
+                      formState.category === option.value && "border-[#35D07F] bg-[#E9F7EF]"
                     )}
                   >
-                    <div className="text-sm font-semibold text-[#111827]" style={formState.category === option.value ? { color: "#2A2C34" } : undefined}>{option.label}</div>
-                    <p className="mt-1 text-xs text-[#6B7280]" style={formState.category === option.value ? { color: "#40504d" } : undefined}>{option.description}</p>
+                    <div className={cn("text-sm font-semibold", formState.category === option.value ? "text-[#2A2C34]" : "text-zinc-100")}>{option.label}</div>
+                    <p className={cn("mt-1 text-xs", formState.category === option.value ? "text-[#40504d]" : "text-muted-foreground")}>{option.description}</p>
                   </button>
                 ))}
               </div>
