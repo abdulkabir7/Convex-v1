@@ -142,7 +142,7 @@ export async function stakeOnMarket(
   if (!walletClient.account) {
     throw new Error("Wallet account not available");
   }
-  const hash = await walletClient.writeContract({
+  const { request } = await publicClient.simulateContract({
     account: walletClient.account,
     address: MANAGER_CONTRACT_ADDRESS,
     abi: convexManagerAbi,
@@ -151,6 +151,8 @@ export async function stakeOnMarket(
     chain: arcMainnet,
     value: amount,
   });
+
+  const hash = await walletClient.writeContract({ ...request, chain: arcMainnet });
 
   await publicClient.waitForTransactionReceipt({ hash });
 

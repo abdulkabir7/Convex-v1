@@ -1,9 +1,9 @@
 import { defineChain } from "viem";
 
-import { DEFAULT_CHAIN_ID, RPC_URL } from "@/lib/constants";
+import { RPC_URL } from "@/lib/constants";
 
 export const arcMainnet = defineChain({
-  id: DEFAULT_CHAIN_ID,
+  id: 5042,
   name: "Arc Mainnet",
   nativeCurrency: { decimals: 18, name: "USDC", symbol: "USDC" },
   rpcUrls: {

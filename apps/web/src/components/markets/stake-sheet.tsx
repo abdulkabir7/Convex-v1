@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, useChainId, usePublicClient, useSwitchChain, useWalletClient } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Loader2 } from "lucide-react";
 
@@ -17,6 +17,7 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { MarketViewModel } from "@/types/market";
 import { stakeOnMarket, toTokenValue } from "@/lib/contracts/manager";
 import { formatNumber } from "@/lib/number";
+import { arcMainnet } from "@/lib/chains";
 
 type StakeSheetProps = {
   market: MarketViewModel | null;
@@ -31,8 +32,10 @@ export function StakeSheet({ market, choice, open, onOpenChange }: StakeSheetPro
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { isConnected, address } = useAccount();
-  const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
+  const chainId = useChainId();
+  const publicClient = usePublicClient({ chainId: arcMainnet.id });
+  const { data: walletClient } = useWalletClient({ chainId: arcMainnet.id });
+  const { switchChainAsync, isPending: isSwitchingChain } = useSwitchChain();
   const { openConnectModal } = useConnectModal();
 
   const multiplier = useMemo(() => {
@@ -49,6 +52,15 @@ export function StakeSheet({ market, choice, open, onOpenChange }: StakeSheetPro
     if (!market || !choice) return;
     if (!isConnected || !address) {
       openConnectModal?.();
+      return;
+    }
+    if (chainId !== arcMainnet.id) {
+      try {
+        await switchChainAsync({ chainId: arcMainnet.id });
+        setErrorMessage("Arc Mainnet selected. Confirm your stake again.");
+      } catch (error) {
+        setErrorMessage((error as Error).message || "Switch your wallet to Arc Mainnet to stake.");
+      }
       return;
     }
     if (!publicClient || !walletClient) {
@@ -68,7 +80,12 @@ export function StakeSheet({ market, choice, open, onOpenChange }: StakeSheetPro
       onOpenChange(false);
     } catch (error) {
       console.error("Stake failed", error);
-      setErrorMessage((error as Error).message ?? "Failed to stake");
+      const message = (error as Error).message ?? "Failed to stake";
+      setErrorMessage(
+        /infura|eth_getBlockByNumber|failed to fetch/i.test(message)
+          ? `Your wallet RPC failed while preparing the Arc transaction. Confirm its Arc Mainnet RPC is ${arcMainnet.rpcUrls.default.http[0]}, then retry. Details: ${message}`
+          : message
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -178,11 +195,13 @@ export function StakeSheet({ market, choice, open, onOpenChange }: StakeSheetPro
               {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
 
               <Button
-                disabled={isProcessing || !market?.canStake || !choice || !market.onChainMarketId}
+                disabled={isProcessing || isSwitchingChain || !market?.canStake || !choice || !market.onChainMarketId}
                 onClick={handleConfirm}
                 className="w-full rounded-2xl bg-primary text-base font-semibold text-white hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isProcessing ? (
+                {isSwitchingChain ? (
+                  "Switching to Arc Mainnet..."
+                ) : isProcessing ? (
                   <span className="flex items-center justify-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Confirming...
